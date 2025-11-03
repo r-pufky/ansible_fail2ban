@@ -1,0 +1,15 @@
+---
+###############################################################################
+# Default Fail2ban Package Dependencies
+###############################################################################
+# Default required packages for fail2ban install.
+
+fail2ban_default_packages:
+  - 'fail2ban'
+
+###############################################################################
+# Fail2ban Configuration Version
+###############################################################################
+# Base version used for initial role creation.
+
+fail2ban_version: '0.11.2-2'

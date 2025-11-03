@@ -1,0 +1,71 @@
+---
+###############################################################################
+# Install Fail2ban
+###############################################################################
+# Fail2ban scans log files and bans IPs that show the malicious signs -- too
+# many password failures, seeking for exploits, etc. Generally Fail2Ban is then
+# used to update firewall rules to reject the IP addresses for a specified
+# amount of time, although any arbitrary other action (e.g. sending an email)
+# could also be configured. Out of the box Fail2Ban comes with filters for
+# various services (apache, courier, ssh, etc).
+#
+# The default debain jail file enables sshd; this is explicitly handled in
+# fail2ban_services in defaults/main.yml.
+
+- name: 'install | install'
+  ansible.builtin.apt:
+    name:  '{{ fail2ban_default_packages }}'
+    state: 'latest'
+    update_cache: true
+
+- name: 'install | remove debian default jails'
+  ansible.builtin.file:
+    path:  '/etc/fail2ban/jail.d/defaults-debian.conf'
+    state: 'absent'
+  notify: 'restart fail2ban'
+
+- name: 'install | copy custom filters'
+  ansible.posix.synchronize:
+    src:       '{{ fail2ban_filterd_path }}'
+    dest:      '/etc/fail2ban/filter.d/'
+    delete:    false
+    recursive: true
+    archive:   false
+    checksum:  true
+  when: fail2ban_filterd_path|length > 0
+  notify: 'restart fail2ban'
+
+- name: 'install | copy custom actions'
+  ansible.posix.synchronize:
+    src:       '{{ fail2ban_actiond_path }}'
+    dest:      '/etc/fail2ban/action.d/'
+    delete:    false
+    recursive: true
+    archive:   false
+    checksum:  true
+  when: fail2ban_actiond_path|length > 0
+  notify: 'restart fail2ban'
+
+- name: 'install | copy custom jails'
+  ansible.posix.synchronize:
+    src:       '{{ fail2ban_jaild_path }}'
+    dest:      '/etc/fail2ban/jail.d/'
+    delete:    false
+    recursive: true
+    archive:   false
+    checksum:  true
+  when: fail2ban_jaild_path|length > 0
+  notify: 'restart fail2ban'
+
+- name: 'install | ensure proper filter/action/jail permissions'
+  ansible.builtin.file:
+    path:  '/etc/fail2ban/{{ item }}/'
+    owner: 'root'
+    group: 'root'
+    mode: 0644
+    state: 'directory'
+    recurse: true
+  loop:
+    - 'filter.d'
+    - 'action.d'
+    - 'jail.d'

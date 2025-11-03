@@ -1,0 +1,31 @@
+---
+###############################################################################
+# Config Fail2ban
+###############################################################################
+# Fail2ban scans log files and bans IPs that show the malicious signs -- too
+# many password failures, seeking for exploits, etc. Generally Fail2Ban is then
+# used to update firewall rules to reject the IP addresses for a specified
+# amount of time, although any arbitrary other action (e.g. sending an email)
+# could also be configured. Out of the box Fail2Ban comes with filters for
+# various services (apache, courier, ssh, etc).
+#
+# Local configuration (.local) overrides default configuration files (.conf).
+#
+
+- name: install | set fail2ban configuration'
+  ansible.builtin.template:
+    src:   'fail2ban.conf.local.j2'
+    dest:  '/etc/fail2ban/fail2ban.local'
+    owner: 'root'
+    group: 'root'
+    mode:  0644
+  notify: 'restart fail2ban'
+
+- name: 'install | set jail configuration'
+  ansible.builtin.template:
+    src:   'jail.conf.local.j2'
+    dest:  '/etc/fail2ban/jail.local'
+    owner: 'root'
+    group: 'root'
+    mode:  0644
+  notify: 'restart fail2ban'

@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author:      'r-pufky'
+  description: 'fail2ban service'
+  company:     'N/A'
+  license:     'GPL-3.0-only'
+  min_ansible_version: 2.11
+
+  platforms:
+    - name: 'Debian'
+      versions:
+        - 'bullseye'
+
+  galaxy_tags:
+    - 'fail2ban'
+
+dependencies: []
